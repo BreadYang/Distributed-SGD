@@ -30,29 +30,26 @@ def calc(s):
 
 
 def SGDfirst(x):
-    fa = deepcopy(Fac.value)
+    fa = Fac.value
     Wtm = dict()
     Htm = dict()
-    lambv = deepcopy(lambb.value)
-    Ni = deepcopy(NI.value)
-    Nj = deepcopy(NJ.value)
     Nprime = int(deepcopy(Npri.value))
     for key, val in x:
         for ij in val:
             ######################
             Nprime += 1
             epsi = (100 + Nprime) ** (-float(Beta.value))
-            tmp = deepcopy(ij[2])
+            tmp = ij[2]
             W = deepcopy(Wb.value.get(ij[0]-1))
             H = deepcopy(Hb.value.get(ij[1]-1))
             for i in range(fa):
                 tmp -= (W[i]*H[i])
                 #if(math.isnan(tmp)):
                     #print Wb.value.get(ij[0]-1), Wtm.get(ij[0]-1), '\n\n\n'
-            gradW = (-2)*tmp*H + 2*lambv/Ni[ij[0]-1]*W
-            Wtm[ij[0]-1] = deepcopy(W - epsi*gradW)
-            gradH = tmp*(-2)*W + 2*lambv/Nj[ij[1]-1]*H
-            Htm[ij[1]-1] = deepcopy(H - epsi*gradH)
+            gradW = (-2)*tmp*H + 2*lambb.value/NI.value[ij[0]-1]*W
+            Wtm[ij[0]-1] = W - epsi*gradW
+            gradH = tmp*(-2)*W + 2*lambb.value/NJ.value[ij[1]-1]*H
+            Htm[ij[1]-1] = H - epsi*gradH
             ######################
     #Htm.cache()
     return ([{0:Wtm, 1:Htm}])
@@ -78,7 +75,7 @@ Wn = WnAll/work  # num of elements per row per block
 Hn = HnAll/work  # num of elements per row per block
 
 
-conf = SparkConf().setAppName("sb605").setMaster("local").set("spark.cores.max", work)
+conf = SparkConf().setAppName("sb605").setMaster("local[10]").set("spark.cores.max", work)
 sc = SparkContext(conf=conf)
 
 
@@ -121,15 +118,16 @@ for i in range(iter):
     for j in range(work):
         res = sc.parallelize(V.filter(lambda (x, y): x in seq[j]).groupByKey().collect(), work).mapPartitions(SGDfirst).reduce(lambda x, y: Red(x, y))
         res = {0: dict(W, **res.get(0)), 1: dict(H, **res.get(1))}
-        W = deepcopy(res.get(0))
-        H = deepcopy(res.get(1))
-        Wb.unpersist()
-        Wb = sc.broadcast(H)
-        Hb.unpersist()
-        Hb = sc.broadcast(H)
         nn = Npri.value
         Npri.unpersist()
         Npri = sc.broadcast(float(i+j/work)*N0)
+        W = res.get(0)
+        H = res.get(1)
+        Wb.unpersist()
+        Wb = sc.broadcast(W)
+        Hb.unpersist()
+        Hb = sc.broadcast(H)
+
 
 ########################################################### reconstruction error
 Wm = zeros((500, fac))
