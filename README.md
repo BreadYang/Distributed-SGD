@@ -20,4 +20,5 @@ beta_value is used to adjust the step size of SGD.
 lambda_value is used to adjust the penalty of parameter size of the reconstructed matrixes.
 
 Created by Shuguan Yang; bread5858 at gmail; Apr 16th 2015.
+
 Update:V2 included the calculation of reconstruction error.
