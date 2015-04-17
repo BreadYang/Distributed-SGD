@@ -7,7 +7,7 @@ Use following command to run the dsgd_mf.py file.
 
 For example:
 
-#####`spark-submit dsgd_mf.py 100 10 50 0.8 1.0 test.csv w.csv h.csv`
+#####`spark-submit dsgd_mf.py 100 10 50 0.8 0.1 test.csv w.csv h.csv`
 
 num_factors is number of factors, that is, how many factors you want the two decomposed matrix W and H have.
 
