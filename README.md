@@ -1,6 +1,6 @@
 # Distributed-SGD
 
-This is a python file realizing distribtued stochastic gradient descent on Spark to solve matrix factorization problem in recommendation system.
+This is a single python file realizing distribtued stochastic gradient descent on Spark to solve matrix factorization problem in recommendation system.
 Use following command to run the dsgd_mf.py file.
 
 `$spark-submit dsgd_mf.py <num_factors> <num_workers> <num_iterations> <beta_value> <lambda_value> <inputV_filepath> <outputW_filepath> <outputH_filepath>`
@@ -19,5 +19,5 @@ beta_value is used to adjust the step size of SGD.
 
 lambda_value is used to adjust the penalty of parameter size of the reconstructed matrixes.
 
-
 Created by Shuguan Yang; bread5858 at gmail; Apr 16th 2015.
+Update:V2 included the calculation of reconstruction error.
